@@ -1,14 +1,14 @@
 import json
-
 from transformers import AutoTokenizer, CLIPModel
+import constant
 
-data = json.load("D:\\wyh\\2016\\") # list[dict]
+data = json.load(constant.json_file) # list[dict]
 
 model = CLIPModel.from_pretrained("openai/clip-vit-large-patch14")
 tokenizer = AutoTokenizer.from_pretrained("openai/clip-vit-large-patch14")
 
-inputs = tokenizer(["a photo of a cat", "a photo of a dog"], padding=True, return_tensors="pt")
-text_features = model.get_text_features(**inputs)
+# inputs = tokenizer(["a photo of a cat", "a photo of a dog"], padding=True, return_tensors="pt")
+# text_features = model.get_text_features(**inputs)
 
 new_data = []
 for mp in data:
