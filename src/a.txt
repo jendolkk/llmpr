@@ -1,0 +1,33 @@
+{
+"patentID": "USD0746541-20160105",
+"figid": "1",
+"caption": "The image depicts a cylindrical object with rounded ends, featuring a series of rectangular sections along its length. The shape and arrangement of these sections suggest that the object may be designed for holding or storing small items.\n\n*   **Cylindrical Shape**: The object is roughly cylindrical in shape, with rounded ends.\n*   **Rectangular Sections**: Along the length of the object are several rectangular sections, which appear to be evenly spaced and symmetrical.\n*   **Arrangement of Components**: The arrangement of these rectangular sections suggests that the object may be designed for holding or storing small items.\n\nBased on the visual elements present in the design, it appears that the object is intended for use as a container or holder. However, without additional information, it is difficult to determine the specific purpose or function of the object.",
+"subfigure_file": "USD0746541-20160105-D00001_1.png"
+},
+
+
+{
+    "id": 0,
+    "patentID": "USD0746807-20160105",
+    "patentdate": "2016-01-05",
+    "figid": "2",
+    "caption": "FIG. 2 is a front view of the smartphone holder as shown in FIG. 1;",
+    "object": "smartphone holder",
+    "aspect": "front view",
+    "figure_file": "USD0746807-20160105-D00001.png",
+    "subfigure_file": "USD0746807-20160105-D00001_2.png",
+    "object_title": "Smartphone holder",
+    "x_figure": 193,
+    "y_figure": 859,
+    "w_figure": 846,
+    "h_figure": 441,
+    "W_label": 0.0722656,
+    "H_label": 0.022213,
+    "L_label": 0.243164,
+    "T_label": 0.447962,
+    "edition_locarno": "10",
+    "classification_locarno": "1403",
+    "top_level_class_locarno": "14",
+    "country_national": "US",
+    "classification_national": "D14253"
+  },
