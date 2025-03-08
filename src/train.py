@@ -40,22 +40,16 @@ for ep in range(constant.epoch):
       heads.to(device),
     )
 
-    # 前向传播
     loss = model(images, text_embeddings, titles, heads)
 
-    # 反向传播
     optimizer.zero_grad()
     loss.backward()
     optimizer.step()
 
-    # 记录 loss
     epoch_loss += loss.item()
-    loop.set_postfix(loss=loss.item())  # 进度条更新
 
-    # 记录 batch loss 到 TensorBoard
     writer.add_scalar("Batch Loss", loss.item(), ep * len(data_loader) + batch_idx)
 
-    # 记录 epoch loss 到 TensorBoard
   avg_loss = epoch_loss / len(data_loader)
   writer.add_scalar("Epoch Loss", avg_loss, ep)
 
