@@ -1,7 +1,9 @@
-import numpy
 import numpy as np
+import torch
+from torch.nn import LogSoftmax
 
-a = []
-a.append(np.zeros(5))
-a.append(np.ones(5))
-# np.save('a.npy', a)
+B = 32
+logits = torch.ones((B, B))
+print(logits)
+u = torch.arange(B)
+print(u)

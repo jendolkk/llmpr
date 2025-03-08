@@ -2,13 +2,12 @@ import json
 import os
 import torch
 from PIL import Image
-
 import numpy as np
-from model import AModel, VisualBackbone
+from modelb import AModel, VisualBackbone
 import faiss
 import constant
 
-d = 512
+d = constant.embedding_dim
 index = faiss.IndexFlatL2(d)
 id2filename = []
 img_names = []
@@ -24,8 +23,8 @@ with torch.no_grad():
     dicts = json.load(f)
     for mp in dicts:
       name = mp['subfigure_file']
-      image = Image.open(os.path.join(constant.img_dir, mp['subfigure_file']))
-      img_feature = model.resnet(transf(image).unsqueeze(0)).squeeze(0).numpy()
+      image = Image.open(os.path.join(constant.img_dir, name))
+      img_feature = model.visual_encoder(transf(image).unsqueeze(0)).squeeze(0).numpy()
       index.add(img_feature)
       imgf_np.append(img_feature)
       img_names.append(name)

@@ -14,7 +14,7 @@ from src.proc_img import id2filename
 import matplotlib as plt
 import constant
 
-dim = 512
+dim = constant.embedding_dim
 # index = faiss.IndexFlatL2(dim)
 index = faiss.read_index("image.faiss")
 id2filename = None

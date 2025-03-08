@@ -1,6 +1,10 @@
 img_dir = "D:\\wyh\\data\\2016\\Segmentednew"
 json_dir = "D:\\wyh\\data\\2016\\desc"
-json_file = "D:\\wyh\\data\\2016\\desc\\0.json"
+json_file = "D:\\wyh\\data\\2016\\final\\final.json"
+ok_file = "D:\\wyh\\data\\2016\\final\\ok.json"
+source_json_file = "D:\\wyh\\data\\2016\\design2016.json"
 faiss_file = "D:\\wyh\\data\\2016\\img.faiss"
 imgf_np = "D:\\wyh\\data\\2016\\imgf.npy"
+embedding_file = '../data/text_embeddings.npy'
 epoch = 10
+embedding_dim = 768

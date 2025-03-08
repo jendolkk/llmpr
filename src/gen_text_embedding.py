@@ -1,5 +1,5 @@
 import torch
-import clip
+# import clip
 import json
 from PIL import Image
 
