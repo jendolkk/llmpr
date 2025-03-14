@@ -2,7 +2,7 @@ import numpy as np
 import torch
 from torch import nn
 from torch.nn import functional as F
-from torchvision.models import resnet50, ResNet50_Weights
+from torchvision.models import resnet50, ResNet50_Weights, vit_b_32, ViT_B_32_Weights
 import constant
 
 
@@ -46,11 +46,13 @@ class AModel(nn.Module):
     return F.cross_entropy(logits, target, device=logits.device)
 
 class VisualBackbone(nn.Module):
-  def __init__(self):
+  def __init__(self, base: str, pretrained=True):
     super().__init__()
-    self.resnet = resnet50(weights=ResNet50_Weights.DEFAULT)
-    # self.resnet = resnet50()
-    self.resnet.fc = nn.Linear(2048, constant.embedding_dim)
+    if base == "resnet":
+      self.encoder = resnet50(weights=ResNet50_Weights.DEFAULT if pretrained else None)
+      self.encoder.fc = nn.Linear(2048, constant.embedding_dim)
+    elif base == "vit":
+      self.encoder = vit_b_32(weights=ViT_B_32_Weights.DEFAULT if pretrained else None)
 
   def forward(self, x):
     return self.resnet(x)
