@@ -15,34 +15,35 @@ class AModel(nn.Module):
 
   def forward(self, images, texts_embeddings, cls, cat):
     visual_embeddings = self.visual_encoder(images)
+    visual_embeddings = visual_embeddings / visual_embeddings.norm(dim=1, keepdim=True)
+    texts_embeddings = texts_embeddings / texts_embeddings.norm(dim=1, keepdim=True)
 
-    loss1, loss2 = self.calculate_loss(visual_embeddings, texts_embeddings, torch.arange(len(images), device=images.device))
+    logit_scale = self.logit_scale.exp()
+    logits_per_text = (texts_embeddings @ visual_embeddings.T) * logit_scale
+    logits_per_img = logits_per_text.T
+
+    loss1, loss2 = self.calculate_loss(logits_per_text, logits_per_img, torch.arange(len(images), device=images.device))
     clip_loss = (loss1 + loss2) / 2.0
-    loss3, loss4 = self.calculate_loss(visual_embeddings, texts_embeddings, cls)
+    cls_target = (cls.unsqueeze(0) == cls.unsqueeze(1)).float()
+    cat_target = (cat.unsqueeze(0) == cat.unsqueeze(1)).float()
+    loss3, loss4 = self.calculate_loss(logits_per_text, logits_per_img, cls_target)
     cls_loss = (loss3 + loss4) / 2.0
-    loss5, loss6= self.calculate_loss(visual_embeddings, texts_embeddings, cat)
+    loss5, loss6= self.calculate_loss(logits_per_text, logits_per_img, cat_target)
     cat_loss = (loss4 + loss6) / 2.0
     loss_all = torch.stack([clip_loss, cls_loss, cat_loss])
 
     total_loss = (loss_all * (-self.s_hats.to(loss_all.device)).exp()).sum() + self.s_hats.to(loss_all.device).sum()
     return total_loss
 
-  def calculate_loss(self, visual_embeddings, text_embeddings, labels):
-    visual_embeddings = visual_embeddings / visual_embeddings.norm(dim=1, keepdim=True)
-    text_embeddings = text_embeddings / text_embeddings.norm(dim=1, keepdim=True)
-
-    logit_scale = self.logit_scale.exp()
-    logits_per_text = (text_embeddings @ visual_embeddings.T) * logit_scale
-    logits_per_img = logits_per_text.T
-
+  def calculate_loss(self, logits_per_text, logits_per_img, labels):
     caption_loss = self.contrastive_loss(logits_per_text, labels)
     image_loss = self.contrastive_loss(logits_per_img, labels)
 
     return caption_loss, image_loss
 
-  def contrastive_loss(self, logits: torch.Tensor, labels) -> torch.Tensor:
-    return F.cross_entropy(logits, torch.arange(len(logits), device=logits.device))
-    # return F.cross_entropy(logits, labels)
+  def contrastive_loss(self, logits: torch.Tensor, target) -> torch.Tensor:
+    # return F.cross_entropy(logits, torch.arange(len(logits), device=logits.device))
+    return F.cross_entropy(logits, target, device=logits.device)
 
 class VisualBackbone(nn.Module):
   def __init__(self):

@@ -9,7 +9,7 @@ from transformers import BertTokenizer, BertModel
 # data = json.load(constant.json_file) # list[dict]
 
 tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
-model = BertModel.from_pretrained("bert-base-uncased")
+model = BertModel.from_pretrained("bert-base-uncased").to('cuda')
 # text = "Replace me by any text you'd like."
 # encoded_input = tokenizer(text, return_tensors='pt')
 # output = model(**encoded_input)
@@ -36,15 +36,15 @@ for data in datas:
     id = mp["patentID"]
     if id not in mp2:
       continue
-    print(i)
-    input = tokenizer([mp['caption'][:400]], return_tensors='pt')
+    print(offset)
+    input = tokenizer([mp['caption']], truncation=True, padding="max_length", return_tensors='pt').to('cuda')
     mp['embedding_id'] = offset
     mp["object_title"] = mp2[id]["object_title"]
     mp["classification_locarno"] = mp2[id]["classification_locarno"]
     new_data.append(mp)
     # embeddings.append(model.get_text_features(**inputs).squeeze(0).detach().numpy())
     ebd = model(**input).last_hidden_state[:,0,:]
-    embeddings.append(ebd.squeeze(0).detach().numpy())
+    embeddings.append(ebd.cpu().squeeze(0).detach().numpy())
     offset += 1
 
 with open(constant.json_file, 'w') as f:
