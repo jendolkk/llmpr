@@ -42,8 +42,7 @@ class AModel(nn.Module):
     return caption_loss, image_loss
 
   def contrastive_loss(self, logits: torch.Tensor, target) -> torch.Tensor:
-    # return F.cross_entropy(logits, torch.arange(len(logits), device=logits.device))
-    return F.cross_entropy(logits, target, device=logits.device)
+    return F.cross_entropy(logits, target)
 
 class VisualBackbone(nn.Module):
   def __init__(self, base: str, pretrained=True):
@@ -53,6 +52,7 @@ class VisualBackbone(nn.Module):
       self.encoder.fc = nn.Linear(2048, constant.embedding_dim)
     elif base == "vit":
       self.encoder = vit_b_32(weights=ViT_B_32_Weights.DEFAULT if pretrained else None)
+      self.encoder.heads = nn.Identity()
 
   def forward(self, x):
-    return self.resnet(x)
+    return self.encoder(x)
