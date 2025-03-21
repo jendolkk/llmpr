@@ -48,4 +48,4 @@ with open(file, 'r') as f:
   print(sum(b))
 # sys.exit(0)
 with open(constant.ok_file, 'w') as f:
-  json.dump(a, f)
+  json.dump(a, f, indent=2)

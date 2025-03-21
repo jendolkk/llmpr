@@ -2,7 +2,7 @@ import numpy as np
 import torch
 from torch import nn
 from torch.nn import functional as F
-from torchvision.models import resnet50, ResNet50_Weights, vit_b_32, ViT_B_32_Weights
+from torchvision.models import resnet50, ResNet50_Weights, vit_b_32
 import constant
 
 
@@ -26,7 +26,7 @@ class AModel(nn.Module):
     clip_loss = (loss1 + loss2) / 2.0
     cls_target = (cls.unsqueeze(0) == cls.unsqueeze(1)).float()
     cat_target = (cat.unsqueeze(0) == cat.unsqueeze(1)).float()
-    loss3, loss4 = self.calculate_loss(logits_per_text, logits_per_img, cls_target)
+    loss3, loss4 = self.calculate_loss(logits_per_text, logits_per_img, cls_target / cls_target.sum(dim=1, keepdim=True))
     cls_loss = (loss3 + loss4) / 2.0
     loss5, loss6= self.calculate_loss(logits_per_text, logits_per_img, cat_target)
     cat_loss = (loss4 + loss6) / 2.0
@@ -42,16 +42,17 @@ class AModel(nn.Module):
     return caption_loss, image_loss
 
   def contrastive_loss(self, logits: torch.Tensor, target) -> torch.Tensor:
+    # return F.cross_entropy(logits, torch.arange(len(logits), device=logits.device))
     return F.cross_entropy(logits, target)
 
 class VisualBackbone(nn.Module):
   def __init__(self, base: str, pretrained=True):
     super().__init__()
-    if base == "resnet":
+    if base == 'resnet':
       self.encoder = resnet50(weights=ResNet50_Weights.DEFAULT if pretrained else None)
       self.encoder.fc = nn.Linear(2048, constant.embedding_dim)
-    elif base == "vit":
-      self.encoder = vit_b_32(weights=ViT_B_32_Weights.DEFAULT if pretrained else None)
+    elif base == 'vit':
+      self.encoder = vit_b_32(weights='DEFAULT' if pretrained else None)
       self.encoder.heads = nn.Identity()
 
   def forward(self, x):

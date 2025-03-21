@@ -14,4 +14,4 @@ with open(constant.ok_file, 'r') as f:
         d['title_id'] = mp[name]
 
 with open(constant.ok_file, 'w') as f:
-    json.dump(a, f)
+    json.dump(a, f, indent=2)

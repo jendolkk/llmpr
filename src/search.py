@@ -26,18 +26,27 @@ def calculate_map(query_num, k=5):
   average_precisions = []
   queries = np.random.randint(0, len(test_json), size=query_num)
 
+  cnt = 0
   for img_idx in queries:
+    img_idx = int(img_idx)
     title_id = test_json[img_idx]['title_id']
     I = image_search(img_idx, k)
 
     hits, precision_at_i = 0, []
-    for i in I[0]:
-      if test_json[i]['title_id'] == title_id:
+    beg = True
+    for i, idx in enumerate(I[0]):
+      if beg:
+        beg = False
+        continue
+      if test_json[idx]['title_id'] == title_id:
         hits += 1
-        precision_at_i.append(hits / (i + 1))
+        # print(hits,idx,hits/i)
+        precision_at_i.append(hits / (i))
 
     average_precisions.append(np.mean(precision_at_i) if precision_at_i else 0)
 
+    cnt += int(len(precision_at_i) > 0)
+  print(f'count: {cnt}/{query_num}')
   return np.mean(average_precisions)
 
 def print_info(idx):
@@ -58,10 +67,12 @@ def print_info(idx):
   print()
 
 
-# idx = random.randint(0, len(test_json))
-# I = image_search(idx, k=10)
-# print_info(idx)
-# for i in I[0]:
-#     print(i, test_json[i]['title_id'], test_json[i]['classification_locarno'])
-print(calculate_map(100, 5))
-print(calculate_map(100, 10))
+mode = 1
+if mode == 0:
+  idx = random.randint(0, len(test_json))
+  I = image_search(idx, k=10)
+  print_info(idx)
+  for i in I[0]:
+    print(i, test_json[i]['title_id'], test_json[i]['classification_locarno'])
+else:
+  print(calculate_map(500, 10))
