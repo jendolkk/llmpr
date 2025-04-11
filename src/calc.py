@@ -10,7 +10,7 @@ from src.utils import get_embeddings
 from utils import load_model, load_json
 
 
-model = load_model('resnet', '../models1/model20.pth')
+model = load_model('resnet', '../model1/model20.pth')
 test_json = load_json(constant.clip_task_test_json)
 
 trans = v2.Compose([
@@ -19,14 +19,21 @@ trans = v2.Compose([
   v2.ToTensor(),
 ])
 test_data = DP2Data(constant.img_dir, constant.clip_task_test_json, transform=trans)
-test_loader = DataLoader(test_data, batch_size=128, shuffle=False)
+test_loader = DataLoader(test_data, batch_size=200, shuffle=False)
 
-embeddings, title_ids = get_embeddings(test_loader, model, trans)
+embeddings, title_ids = None, None
+
+with torch.no_grad():
+    embeddings, title_ids = get_embeddings(test_loader, model, trans)
+
+
+print(title_ids[:10])
 
 calculator = AccuracyCalculator(
   include=['mean_average_precision', 'mean_reciprocal_rank'],
   avg_of_avgs=True,
-  device='cuda'
+  k=10,
+  device=torch.device('cuda')
 )
 
 query = []
@@ -38,10 +45,14 @@ for i in range(len(embeddings)):
     query_labels.append(title_ids[i])
     s.add(title_ids[i])
 
+query = torch.vstack(query)
+query_labels = torch.vstack(query_labels)
+# print(query_labels[:10])
 dicts = calculator.get_accuracy(
   query, query_labels,
   embeddings, title_ids,
-  ref_includes_query=True
+  # query, query_labels,
+  ref_includes_query=False
 )
 
 print(dicts)
