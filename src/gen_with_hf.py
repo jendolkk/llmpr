@@ -8,7 +8,6 @@ import constant
 model = CLIPModel.from_pretrained("openai/clip-vit-large-patch14")
 tokenizer = AutoTokenizer.from_pretrained("openai/clip-vit-large-patch14")
 
-print('ok')
 datas = []
 for subdir in os.walk(constant.json_dir):
   for j in subdir[2]:

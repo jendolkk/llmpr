@@ -29,10 +29,13 @@ class AModel(nn.Module):
     loss3, loss4 = self.calculate_loss(logits_per_text, logits_per_img, cls_target / cls_target.sum(dim=1, keepdim=True))
     cls_loss = (loss3 + loss4) / 2.0
     loss5, loss6= self.calculate_loss(logits_per_text, logits_per_img, cat_target)
-    cat_loss = (loss4 + loss6) / 2.0
+    cat_loss = (loss5 + loss6) / 2.0
     loss_all = torch.stack([clip_loss, cls_loss, cat_loss])
 
-    total_loss = (loss_all * (-self.s_hats.to(loss_all.device)).exp()).sum() + self.s_hats.to(loss_all.device).sum()
+    u = self.s_hats.to(loss_all.device) * -1
+    u = u.exp() * loss_all
+    v = self.s_hats.to(loss_all.device).sum()
+    total_loss = u.sum() + v
     return total_loss
 
   def calculate_loss(self, logits_per_text, logits_per_img, labels):
